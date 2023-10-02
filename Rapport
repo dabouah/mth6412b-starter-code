@@ -5,7 +5,14 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 961c50c6-3f93-4c36-8dd3-1392594d96f1
-"Hello World"
+md"""Hello World"""
+
+# ╔═╡ ee512c84-cc38-4239-b5c3-d4e3417f3a6d
+"""coucou"""
+function HelloWorld()
+	println("Hello World !")
+end
 
 # ╔═╡ Cell order:
 # ╠═961c50c6-3f93-4c36-8dd3-1392594d96f1
+# ╠═ee512c84-cc38-4239-b5c3-d4e3417f3a6d
