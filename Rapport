@@ -137,6 +137,42 @@ nodes(edge::AbstractEdge) = [edge.node_1, edge.node_2]
 """Renvoie le poids de l'arête."""
 weight(edge::AbstractEdge) = edge.weight
 
+# ╔═╡ b5892700-1829-4128-be68-63d50e107a4d
+begin 
+	import Base.show
+	"""Affiche une arête."""
+	function show(edge::AbstractEdge)
+	  println("Edge ", name(edge), ", links node ", show(edge.node_1), "to node", show(edge.node_2), ", weight: ", weight(edge))
+	end
+end
+
+# ╔═╡ 84de1931-59c5-439d-b95d-4a049fd3f207
+md"""
+#### 3 Extansion du type Graph
+
+##### 3.1 Modification de la structure
+"""
+
+# ╔═╡ 0458d21d-64f4-4cec-8257-961a316745a8
+md"""
+##### 3.2 Fonction d'ajout d'arête à un graphe
+"""
+
+# ╔═╡ 78dc337d-cd8f-472f-b40e-44b33a3e3602
+md"""
+##### 3.3 Méthodes qui accédent aux arêtes et au nombre d'arêtes
+"""
+
+# ╔═╡ fbc154e6-0425-4b2c-a99c-ca3389f6e0e8
+md"""
+##### 3.4 Fonction show()
+"""
+
+# ╔═╡ 9e9a4f0e-4622-441b-949b-7f6295852754
+md"""
+#### 4 Extansion de la fonction read_edges()
+"""
+
 # ╔═╡ Cell order:
 # ╟─961c50c6-3f93-4c36-8dd3-1392594d96f1
 # ╟─049bcd76-b376-4e0d-991d-538f962e81f8
@@ -147,7 +183,7 @@ weight(edge::AbstractEdge) = edge.weight
 # ╟─8753e6fd-db1a-4a82-9e0e-505a1489dac0
 # ╟─a0963d6e-c350-4a3e-a430-68aeca26658a
 # ╟─218be428-19d4-4bff-b915-4b3c27918d22
-# ╠═44adb3cc-40bc-457a-81d7-bec215979932
+# ╟─44adb3cc-40bc-457a-81d7-bec215979932
 # ╟─9d5d2ca5-a711-4edb-995a-e15ddc76b0a9
 # ╟─638b2cc2-1973-44ba-a777-875f37fe62b8
 # ╟─48344f9c-e0ce-4371-a80d-f9196e02b4c1
@@ -157,3 +193,9 @@ weight(edge::AbstractEdge) = edge.weight
 # ╠═060709a5-d122-4118-ae73-3a8426986ed2
 # ╠═f14c20dd-c54a-4dc3-a224-e7a2393d6e99
 # ╠═a691d024-ac0f-4fdf-8245-f3ca2caa0f30
+# ╠═b5892700-1829-4128-be68-63d50e107a4d
+# ╟─84de1931-59c5-439d-b95d-4a049fd3f207
+# ╟─0458d21d-64f4-4cec-8257-961a316745a8
+# ╟─78dc337d-cd8f-472f-b40e-44b33a3e3602
+# ╟─fbc154e6-0425-4b2c-a99c-ca3389f6e0e8
+# ╟─9e9a4f0e-4622-441b-949b-7f6295852754
