@@ -2,7 +2,7 @@ import Base.show
 
 
 """Type abstrait dont d'autres types d'arêtes dériveront."""
-abstract type AbstractEdge{W} end
+abstract type AbstractEdge{W,T} end
 
 """Type représentant les arêtes d'un graphe.
 
@@ -13,7 +13,7 @@ Exemple:
         arête = Edge("Larry", noeud_1, noeud_2, 10)
 
 """
-mutable struct Edge{W,T} <: AbstractEdge{W}
+mutable struct Edge{W,T} <: AbstractEdge{W,T}
   name::String
   node_1::Node{T}
   node_2::Node{T}
