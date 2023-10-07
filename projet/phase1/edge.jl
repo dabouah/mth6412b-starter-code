@@ -32,7 +32,7 @@ nodes(edge::AbstractEdge) = [edge.node_1, edge.node_2]
 """Renvoie le poids de l'arête."""
 weight(edge::AbstractEdge) = edge.weight
 
-"""Assigne un poids très grand à une arête quand on ne le connait pas encore"""
+"""Crée une arête avec un poids par défaut"""
 function Edge(name::String, node_1::Node{T}, node_2::Node{T}) where T
     Edge(name, node_1, node_2, 9999999)
 end
