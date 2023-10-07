@@ -5,14 +5,155 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 961c50c6-3f93-4c36-8dd3-1392594d96f1
-md"""Hello World"""
+md"""
+# Rapport Phase 1
 
-# ╔═╡ ee512c84-cc38-4239-b5c3-d4e3417f3a6d
-"""coucou"""
-function HelloWorld()
-	println("Hello World !")
+#### 1 Code fourni
+
+##### 1.1 Type Node
+"""
+
+# ╔═╡ 049bcd76-b376-4e0d-991d-538f962e81f8
+"""Type abstrait dont d'autres types de noeuds dériveront."""
+abstract type AbstractNode{T} end
+
+# ╔═╡ 288bfad5-c084-4936-9fd7-b31cbe8d008a
+"""Type représentant les noeuds d'un graphe.
+
+Exemple:
+
+        noeud = Node("James", [π, exp(1)])
+        noeud = Node("Kirk", "guitar")
+        noeud = Node("Lars", 2)
+
+"""
+mutable struct Node{T} <: AbstractNode{T}
+  name::String
+  data::T
 end
 
+# ╔═╡ c58d3e3b-1de7-4b8e-99da-ab048bdd8903
+"""Renvoie le nom du noeud."""
+name(node::AbstractNode) = node.name
+
+# ╔═╡ 079e6d8d-53fd-4746-bd67-4a0a0345f279
+"""Renvoie les données contenues dans le noeud."""
+data(node::AbstractNode) = node.data
+
+# ╔═╡ 312deedf-73ed-40e8-9f88-2cca37b52b97
+md"""
+##### 1.2 Type Graph (avant modification)
+"""
+
+# ╔═╡ 8753e6fd-db1a-4a82-9e0e-505a1489dac0
+"""Type abstrait dont d'autres types de graphes dériveront."""
+abstract type AbstractGraph{T} end
+
+# ╔═╡ a0963d6e-c350-4a3e-a430-68aeca26658a
+"""Type representant un graphe comme un ensemble de noeuds.
+
+Exemple :
+
+    node1 = Node("Joe", 3.14)
+    node2 = Node("Steve", exp(1))
+    node3 = Node("Jill", 4.12)
+    G = Graph("Ick", [node1, node2, node3])
+
+Attention, tous les noeuds doivent avoir des données de même type.
+"""
+mutable struct Graph{T} <: AbstractGraph{T}
+  name::String
+  nodes::Vector{Node{T}}
+end
+
+# ╔═╡ 218be428-19d4-4bff-b915-4b3c27918d22
+"""Ajoute un noeud au graphe."""
+function add_node!(graph::Graph{T}, node::Node{T}) where T
+  push!(graph.nodes, node)
+  graph
+end
+
+# ╔═╡ 44adb3cc-40bc-457a-81d7-bec215979932
+"""Renvoie le nom du graphe."""
+name(graph::AbstractGraph) = graph.name
+
+# ╔═╡ 9d5d2ca5-a711-4edb-995a-e15ddc76b0a9
+"""Renvoie la liste des noeuds du graphe."""
+nodes(graph::AbstractGraph) = graph.nodes
+
+# ╔═╡ 638b2cc2-1973-44ba-a777-875f37fe62b8
+"""Renvoie le nombre de noeuds du graphe."""
+nb_nodes(graph::AbstractGraph) = length(graph.nodes)
+
+# ╔═╡ 48344f9c-e0ce-4371-a80d-f9196e02b4c1
+md"""
+#### 2 Proposition d'un type Edge
+
+##### 2.1 Type abstrait et Structure
+"""
+
+# ╔═╡ ee512c84-cc38-4239-b5c3-d4e3417f3a6d
+"""Type abstrait dont d'autres types d'arêtes dériveront."""
+abstract type AbstractEdge{W,T} end
+
+# ╔═╡ 341cb5d2-26c8-490e-bf59-5d4c56196df2
+begin 
+	"""Type représentant les arêtes d'un graphe.
+	
+	Exemple:
+	
+	        noeud_1 = Node("James", [π, exp(1)])
+	        noeud_2 = Node("Kirk", "guitar")
+	        arête = Edge("Larry", noeud_1, noeud_2, 10)
+	
+	"""
+	mutable struct Edge{W,T} <: AbstractEdge{W,T}
+	  name::String
+	  node_1::Node{T}
+	  node_2::Node{T}
+	  weight::W
+	end
+
+	"""Assigne un poids très grand à une arête quand on ne le connait pas encore"""
+	function Edge(name::String, node_1::Node{T}, node_2::Node{T}) where T
+    	Edge(name, node_1, node_2, 9999999)
+	end
+end
+
+# ╔═╡ f79d29d5-c895-4910-bcd1-3b9965ee9910
+md"""
+##### 2.2 Accès aux éléments de Edge
+"""
+
+# ╔═╡ 060709a5-d122-4118-ae73-3a8426986ed2
+"""Renvoie le nom de l'arête."""
+name(edge::AbstractEdge) = edge.name
+
+# ╔═╡ f14c20dd-c54a-4dc3-a224-e7a2393d6e99
+"""Renvoie les deux noeuds de l'arête."""
+nodes(edge::AbstractEdge) = [edge.node_1, edge.node_2]
+
+# ╔═╡ a691d024-ac0f-4fdf-8245-f3ca2caa0f30
+"""Renvoie le poids de l'arête."""
+weight(edge::AbstractEdge) = edge.weight
+
 # ╔═╡ Cell order:
-# ╠═961c50c6-3f93-4c36-8dd3-1392594d96f1
+# ╟─961c50c6-3f93-4c36-8dd3-1392594d96f1
+# ╟─049bcd76-b376-4e0d-991d-538f962e81f8
+# ╟─288bfad5-c084-4936-9fd7-b31cbe8d008a
+# ╠═c58d3e3b-1de7-4b8e-99da-ab048bdd8903
+# ╟─079e6d8d-53fd-4746-bd67-4a0a0345f279
+# ╟─312deedf-73ed-40e8-9f88-2cca37b52b97
+# ╟─8753e6fd-db1a-4a82-9e0e-505a1489dac0
+# ╟─a0963d6e-c350-4a3e-a430-68aeca26658a
+# ╟─218be428-19d4-4bff-b915-4b3c27918d22
+# ╠═44adb3cc-40bc-457a-81d7-bec215979932
+# ╟─9d5d2ca5-a711-4edb-995a-e15ddc76b0a9
+# ╟─638b2cc2-1973-44ba-a777-875f37fe62b8
+# ╟─48344f9c-e0ce-4371-a80d-f9196e02b4c1
 # ╠═ee512c84-cc38-4239-b5c3-d4e3417f3a6d
+# ╠═341cb5d2-26c8-490e-bf59-5d4c56196df2
+# ╟─f79d29d5-c895-4910-bcd1-3b9965ee9910
+# ╠═060709a5-d122-4118-ae73-3a8426986ed2
+# ╠═f14c20dd-c54a-4dc3-a224-e7a2393d6e99
+# ╠═a691d024-ac0f-4fdf-8245-f3ca2caa0f30
