@@ -28,7 +28,7 @@ function Graph(name::String)
 end
 
 """Crée un graphe sans arêtes"""
-function Graph(name::String, nodes::Vector{Nodes{T}}) where T
+function Graph(name::String, nodes::Vector{Node{T}}) where T 
   Graph(name, nodes, [])
 end
 
@@ -39,7 +39,7 @@ function add_node!(graph::Graph{T,W}, node::Node{T}) where T where W
 end
 
 """Ajoute une arête au graphe"""
-function add_edge!(graph::Graph{T,W}, edge::Edge{w,T}) where T where W
+function add_edge!(graph::Graph{T,W}, edge::Edge{W,T}) where T where W
   if edge.node_1 in graph.nodes
     if edge.node_2 in graph.nodes
       push!(graph.edges, edge)
