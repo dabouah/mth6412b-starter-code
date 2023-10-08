@@ -10,8 +10,8 @@ Exemple :
     node1 = Node("Joe", 3.14)
     node2 = Node("Steve", exp(1))
     node3 = Node("Jill", 4.12)
-    edge1 = Edge("Married", node2, node3, 10)
-    edge2 = Edge("Siblings", node1, node2, 25)
+    edge1 = Edge(node2, node3, 10)
+    edge2 = Edge(node1, node2, 25)
     G = Graph("Family tree", [node1, node2, node3], [edge1,edge2])
 
 Attention, tous les noeuds doivent avoir des données de même type.
