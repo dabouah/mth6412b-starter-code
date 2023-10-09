@@ -17,6 +17,11 @@ mutable struct Node{T} <: AbstractNode{T}
   data::T
 end
 
+"""Crée un  noeud sans coordonnées"""
+function Node(name::String)
+  Node(name, 0)
+end
+
 # on présume que tous les noeuds dérivant d'AbstractNode
 # posséderont des champs `name` et `data`.
 

@@ -180,6 +180,7 @@ function read_stsp(filename::String)
   Base.print("Reading of nodes : ")
   graph_nodes = read_nodes(header, filename)
   println("✓")
+  println(typeof(graph_nodes))
 
   Base.print("Reading of edges : ")
   edges_brut = read_edges(header, filename)
@@ -201,7 +202,10 @@ function read_stsp(filename::String)
     graph_edges[k] = sort(graph_edges[k])
   end
   println("✓")
-  return graph_nodes, graph_edges
+
+  graphe = Graph(header["NAME"], graph_nodes, edges_brut)
+
+  return graphe, graph_nodes, graph_edges
 end
 
 """Affiche un graphe étant données un ensemble de noeuds et d'arêtes.

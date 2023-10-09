@@ -47,10 +47,10 @@ md"""
 
 # ╔═╡ 8753e6fd-db1a-4a82-9e0e-505a1489dac0
 """Type abstrait dont d'autres types de graphes dériveront."""
-abstract type AbstractGraph{T} end
+abstract type AbstractGraph{T,W} end
 
 # ╔═╡ a0963d6e-c350-4a3e-a430-68aeca26658a
-"""Type representant un graphe comme un ensemble de noeuds.
+md"""Type representant un graphe comme un ensemble de noeuds.
 
 Exemple :
 
@@ -61,17 +61,11 @@ Exemple :
 
 Attention, tous les noeuds doivent avoir des données de même type.
 """
-mutable struct Graph{T} <: AbstractGraph{T}
-  name::String
-  nodes::Vector{Node{T}}
-end
+
 
 # ╔═╡ 218be428-19d4-4bff-b915-4b3c27918d22
-"""Ajoute un noeud au graphe."""
-function add_node!(graph::Graph{T}, node::Node{T}) where T
-  push!(graph.nodes, node)
-  graph
-end
+md"""Il existe une fonction add_node! qui prend en argument un graphe et un noeud. Cette fonction permet de push un noeud dans le vector de noeud du graphe considéré. Elle renvoit ensuite le graphe."""
+
 
 # ╔═╡ 44adb3cc-40bc-457a-81d7-bec215979932
 """Renvoie le nom du graphe."""
@@ -153,34 +147,242 @@ md"""
 ##### 3.1 Modification de la structure
 """
 
+# ╔═╡ 986f48cf-21e4-4bc1-af62-6ebb47218d54
+md"""Le dernier constructeur prend en argument un nom de graphe, un dictionnaire et un vecteur car il est a utiliser directement dans la fonction read\_stsp avec comme dictionnaire graph\_nodes et comme vecteur edges\_brut. 
+"""
+
 # ╔═╡ 0458d21d-64f4-4cec-8257-961a316745a8
 md"""
 ##### 3.2 Fonction d'ajout d'arête à un graphe
 """
+
+# ╔═╡ 5394a318-5021-4449-a006-101562a1f008
+"""Ajoute une arête au graphe si les noeuds existent déjà dans le graphe"""
+function add_edge!(graph::Graph{T,W}, edge::Edge{W,T}) where T where W
+  if edge.node_1 in graph.nodes
+    if edge.node_2 in graph.nodes
+      push!(graph.edges, edge)
+    else
+      "Attention : un noeud de l'arête n'existe pas dans le graphe"
+    end
+  else 
+    "Attention : un noeud de l'arête n'existe pas dans le graphe"
+  end
+end
+
+# ╔═╡ b5a01856-1a9e-4b3d-bf1a-fe4d373841ea
+begin
+	"""Type representant un graphe comme un ensemble de noeuds.
+	Exemple : 
+	
+		node1 = Node("Joe", 3.14)
+		node2 = Node("Steve", exp(1))
+		node3 = Node("Jill", 4.12)
+		edge1 = Edge(node2, node3, 10)
+		edge2 = Edge(node1, node2, 25)
+		G = Graph("Family tree", [node1, node2, node3], [edge1,edge2])
+	
+	Attention, tous les noeuds doivent avoir des données de même type."""
+	mutable struct Graph{T,W} <: AbstractGraph{T,W}
+		name::String
+		nodes::Vector{Node{T}}
+		edges::Vector{Edge{W,T}}
+	end
+
+	"""Crée un graphe sans noeuds et sans arêtes"""
+	function Graph(name::String) 
+	  Graph(name, Vector{Node{T}}[] where T, Vector{Edge{W,T}}[] where T where W) 
+	end
+	
+	"""Crée un graphe sans arêtes"""
+	function Graph(name::String, nodes::Vector{Node{T}}) where T 
+	  Graph(name, nodes, [])
+	end
+
+	"""Crée un graphe à partir d'un dictionnaire de coordonnées qui représente les noeuds et d'un vecteur de tuples où chaque tuple représente une arête 
+	(tuple[1] : nom du noeud 1, tuple[2] : nom du noeud 2, tuple[3] : poids de l'arete)"""
+	function Graph(name::String, nodes::Dict{Int}{Vector{T}}, edges::Vector{Tuple{Number}}) where T 
+	  graphe = Graph(name)
+	  if nodes == Dict{Int}{Vector{T}}()
+	    nodes_names::Vector[Int]=[]
+	    for edge in edges
+	      if edge[1] not in nodes_names
+	        push!(nodes_names,edge[1])
+	        noeud = Node(parse(String, edge[1]))
+	        add_node!(graphe, noeud)
+	      end
+	      if edge[2] in nodes_names
+	        push!(nodes_names,edge[2])
+	        noeud = Node(parse(String, edge[2]))
+	        add_node!(graphe, noeud)
+	      end
+	    end
+	  else 
+	    for name_n in keys(nodes)
+	      noeud = Node(parse(String, name_n),nodes[name_n])
+	      add_node!(graphe, noeud)
+	    end
+	  end
+	  for edge in edges
+	    node_1 = Node(edge[1])
+	    node_2 = Node(edge[2])
+	    for node in graphe.nodes
+	      if node.name == edge[1]
+	        node_1=node
+	      end
+	      if node.name == edge[2]
+	        node_2=node
+	      end
+	    end
+	    arete = Edge(node_1, node_2, edge[3])
+	    add_edge!(graphe, arete)
+	  end
+	  return graphe
+	end 
+		
+end 
 
 # ╔═╡ 78dc337d-cd8f-472f-b40e-44b33a3e3602
 md"""
 ##### 3.3 Méthodes qui accédent aux arêtes et au nombre d'arêtes
 """
 
+# ╔═╡ daf2597f-6961-405c-8186-3f77452c2e92
+"""Renvoie la liste des arêtes du graphe."""
+edges(graph::AbstractGraph) = graph.edges
+
+# ╔═╡ 23b993e3-332f-4901-826f-3a5bc8206301
+"""Renvoie le nombre d'arêtes du graphe."""
+nb_edges(graph::AbstractGraph) = length(graph.edges)
+
 # ╔═╡ fbc154e6-0425-4b2c-a99c-ca3389f6e0e8
 md"""
 ##### 3.4 Fonction show()
 """
 
+# ╔═╡ 3c620284-71a2-49e1-a540-7eb31debd88a
+"""Affiche un graphe"""
+function show_g(graph::Graph)
+  println("Graph ", name(graph), " has ", nb_nodes(graph), " nodes and ", nb_edges(graph), " edges.")
+  println("the nodes in the graph are : ")
+  for node in nodes(graph)
+    show(node)
+  end
+  println("the edges in the graph are : ")
+  for edge in edges(graph)
+    show(edge)
+  end
+end
+
 # ╔═╡ 9e9a4f0e-4622-441b-949b-7f6295852754
 md"""
-#### 4 Extansion de la fonction read_edges()
+#### 4 Modification du fichier read_stsp
+
+##### 4.1 Extansion de la fonction read_edges()
+"""
+
+# ╔═╡ b74d5bcc-e84d-4f31-8d91-9092e0993866
+md"""
+		for j = start : start + n_on_this_line - 1
+
+        n_edges = n_edges + 1
+
+        	if edge_weight_format in ["UPPER_ROW", "LOWER_COL"]
+
+            	edge = (k+1, i+k+2, parse(Float64, data[j+1]))
+
+            elseif edge_weight_format in ["UPPER_DIAG_ROW", "LOWER_DIAG_COL"]
+
+            	edge = (k+1, i+k+1, parse(Float64, data[j+1]))
+
+            elseif edge_weight_format in ["UPPER_COL", "LOWER_ROW"]
+
+            	edge = (i+k+2, k+1, parse(Float64, data[j+1]))
+
+            elseif edge_weight_format in ["UPPER_DIAG_COL", "LOWER_DIAG_ROW"]
+
+            	edge = (i+1, k+1, parse(Float64, data[j+1]))
+
+            elseif edge_weight_format == "FULL_MATRIX"
+
+            	edge = (k+1, i+1, parse(Float64, data[j+1]))
+
+            else
+
+            	warn("Unknown format - function read_edges")
+
+            end
+
+            push!(edges, edge)
+
+            i += 1
+
+        end
+"""
+
+# ╔═╡ ffe265c9-e987-4705-bf9d-2b879d9bdfb3
+md"""
+On a modifié la fonction read\_edges afin que la valeur du poids de l'arête soit stockée dans le tuple qui contient toutes les informations concernant une arête. On a donc écrit edge = (..., ..., parse(Float64, data[j+1])) aux lignes 8, 12, 16, 20 et 24.
+"""
+
+# ╔═╡ 1e8226ba-e90c-4388-a782-24ee94e924ee
+md"""
+##### 4.2 Extansion de la fonction read_stsp()
+"""
+
+# ╔═╡ fb10d0e7-41f3-422e-9fc2-9bbbd81bcaef
+"""Renvoie les noeuds et les arêtes du graphe."""
+function read_stsp(filename::String)
+  Base.print("Reading of header : ")
+  header = read_header(filename)
+  println("✓")
+  dim = parse(Int, header["DIMENSION"])
+  edge_weight_format = header["EDGE_WEIGHT_FORMAT"]
+
+  Base.print("Reading of nodes : ")
+  graph_nodes = read_nodes(header, filename)
+  println("✓")
+  println(typeof(graph_nodes))
+
+  Base.print("Reading of edges : ")
+  edges_brut = read_edges(header, filename)
+  graph_edges = []
+  for k = 1 : dim
+    edge_list = Int[]
+    push!(graph_edges, edge_list)
+  end
+
+  for edge in edges_brut
+    if edge_weight_format in ["UPPER_ROW", "LOWER_COL", "UPPER_DIAG_ROW", "LOWER_DIAG_COL"]
+      push!(graph_edges[edge[1]], edge[2])
+    else
+      push!(graph_edges[edge[2]], edge[1])
+    end
+  end
+
+  for k = 1 : dim
+    graph_edges[k] = sort(graph_edges[k])
+  end
+  println("✓")
+
+  graphe = Graph(header["NAME"], graph_nodes, edges_brut)
+
+  return graphe, graph_nodes, graph_edges
+end
+
+# ╔═╡ 81399b2b-ee56-4ba5-a0f4-3286f362bb06
+md"""
+La seule chose que nous avons modifié pour nous permettre de créer un objet de type graphe dans cette fonction a été d'ajouter "graphe = Graph(header["NAME"], graph\_nodes, edges\_brut)" à la ligne 35 et de modifier ce qui est retourné en ajoutant le graphe créé dans le tuple comme ceci "return graphe, graph\_nodes, graph\_edges" (ligne 37)
 """
 
 # ╔═╡ Cell order:
 # ╟─961c50c6-3f93-4c36-8dd3-1392594d96f1
 # ╟─049bcd76-b376-4e0d-991d-538f962e81f8
-# ╟─288bfad5-c084-4936-9fd7-b31cbe8d008a
+# ╠═288bfad5-c084-4936-9fd7-b31cbe8d008a
 # ╠═c58d3e3b-1de7-4b8e-99da-ab048bdd8903
 # ╟─079e6d8d-53fd-4746-bd67-4a0a0345f279
 # ╟─312deedf-73ed-40e8-9f88-2cca37b52b97
-# ╟─8753e6fd-db1a-4a82-9e0e-505a1489dac0
+# ╠═8753e6fd-db1a-4a82-9e0e-505a1489dac0
 # ╟─a0963d6e-c350-4a3e-a430-68aeca26658a
 # ╟─218be428-19d4-4bff-b915-4b3c27918d22
 # ╟─44adb3cc-40bc-457a-81d7-bec215979932
@@ -195,7 +397,18 @@ md"""
 # ╠═a691d024-ac0f-4fdf-8245-f3ca2caa0f30
 # ╠═b5892700-1829-4128-be68-63d50e107a4d
 # ╟─84de1931-59c5-439d-b95d-4a049fd3f207
+# ╠═b5a01856-1a9e-4b3d-bf1a-fe4d373841ea
+# ╠═986f48cf-21e4-4bc1-af62-6ebb47218d54
 # ╟─0458d21d-64f4-4cec-8257-961a316745a8
+# ╠═5394a318-5021-4449-a006-101562a1f008
 # ╟─78dc337d-cd8f-472f-b40e-44b33a3e3602
+# ╠═daf2597f-6961-405c-8186-3f77452c2e92
+# ╠═23b993e3-332f-4901-826f-3a5bc8206301
 # ╟─fbc154e6-0425-4b2c-a99c-ca3389f6e0e8
-# ╟─9e9a4f0e-4622-441b-949b-7f6295852754
+# ╠═3c620284-71a2-49e1-a540-7eb31debd88a
+# ╠═9e9a4f0e-4622-441b-949b-7f6295852754
+# ╠═b74d5bcc-e84d-4f31-8d91-9092e0993866
+# ╟─ffe265c9-e987-4705-bf9d-2b879d9bdfb3
+# ╟─1e8226ba-e90c-4388-a782-24ee94e924ee
+# ╠═fb10d0e7-41f3-422e-9fc2-9bbbd81bcaef
+# ╟─81399b2b-ee56-4ba5-a0f4-3286f362bb06
