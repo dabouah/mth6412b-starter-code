@@ -38,6 +38,9 @@ function read_nodes(header::Dict{String}{String}, filename::String)
 
 
   if !(node_coord_type in ["TWOD_COORDS", "THREED_COORDS"]) && !(display_data_type in ["COORDS_DISPLAY", "TWOD_DISPLAY"])
+    for k = 1 : parse(Int, header["DIMENSION"])
+      nodes[k]=Vector{Float64}[]
+    end
     return nodes
   end
 
@@ -69,6 +72,8 @@ function read_nodes(header::Dict{String}{String}, filename::String)
     end
   end
   close(file)
+  @show nodes
+  @show typeof(nodes)
   return nodes
 end
 
@@ -93,7 +98,7 @@ end
 """Analyse un fichier .tsp et renvoie l'ensemble des arêtes sous la forme d'un tableau."""
 function read_edges(header::Dict{String}{String}, filename::String)
 
-  edges = []
+  edges = Tuple{Int,Int,Float64}[]
   edge_weight_format = header["EDGE_WEIGHT_FORMAT"]
   known_edge_weight_formats = ["FULL_MATRIX", "UPPER_ROW", "LOWER_ROW",
   "UPPER_DIAG_ROW", "LOWER_DIAG_ROW", "UPPER_COL", "LOWER_COL",
@@ -180,31 +185,40 @@ function read_stsp(filename::String)
   Base.print("Reading of nodes : ")
   graph_nodes = read_nodes(header, filename)
   println("✓")
-  println(typeof(graph_nodes))
+  _keys = keys(graph_nodes)
+  #println(typeof(graph_nodes[first(_keys)]))
+  Data = typeof(graph_nodes[first(_keys)])
 
   Base.print("Reading of edges : ")
+  # # graph_edges = Edge{,Data}[] 
+  # graph_edges = Vector{Int}[]
+  # println(typeof(graph_edges))
+  # for k = 1 : dim
+  #   edge_list = Int[]
+  #   push!(graph_edges, edge_list)
+  # end
+
   edges_brut = read_edges(header, filename)
-  graph_edges = []
-  for k = 1 : dim
-    edge_list = Int[]
-    push!(graph_edges, edge_list)
-  end
+  #println(typeof(edges_brut))
+  # for edge in edges_brut
+  #   if edge_weight_format in ["UPPER_ROW", "LOWER_COL", "UPPER_DIAG_ROW", "LOWER_DIAG_COL"]
+  #     push!(graph_edges[edge[1]], edge[2])
+  #   else
+  #     push!(graph_edges[edge[2]], edge[1])
+  #   end
+  # end
 
-  for edge in edges_brut
-    if edge_weight_format in ["UPPER_ROW", "LOWER_COL", "UPPER_DIAG_ROW", "LOWER_DIAG_COL"]
-      push!(graph_edges[edge[1]], edge[2])
-    else
-      push!(graph_edges[edge[2]], edge[1])
-    end
-  end
-
-  for k = 1 : dim
-    graph_edges[k] = sort(graph_edges[k])
-  end
+  # for k = 1 : dim
+  #   graph_edges[k] = sort(graph_edges[k])
+  # end
   println("✓")
+
+  #println(typeof(graph_nodes))
+  #println(typeof(graph_edges))
 
   graphe = Graph(header["NAME"], graph_nodes, edges_brut)
 
+  graph_edges = Vector{Int}[]
   return graphe, graph_nodes, graph_edges
 end
 

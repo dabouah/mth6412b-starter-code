@@ -15,11 +15,12 @@ Exemple:
 mutable struct Node{T} <: AbstractNode{T}
   name::String
   data::T
+  indice::Int
 end
 
 """Crée un  noeud sans coordonnées"""
-function Node(name::String)
-  Node(name, 0)
+function Node(name::String; T::DataType=Int, indice=-1)
+  Node(name, zero(T), indice)
 end
 
 # on présume que tous les noeuds dérivant d'AbstractNode
@@ -31,7 +32,10 @@ name(node::AbstractNode) = node.name
 """Renvoie les données contenues dans le noeud."""
 data(node::AbstractNode) = node.data
 
+"""Renvoie l'indice du noeud."""
+indice(node::AbstractNode) = node.indice
+
 """Affiche un noeud."""
 function show(node::AbstractNode)
-  println("Node ", name(node), ", data: ", data(node))
+  println("Node ", name(node), ", data: ", data(node), ", indice: ", indice(node))
 end

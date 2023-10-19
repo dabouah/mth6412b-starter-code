@@ -23,12 +23,16 @@ mutable struct Graph{T,W} <: AbstractGraph{T,W}
 end
 
 """Crée un graphe sans noeuds et sans arêtes"""
-function Graph(name::String) 
-  x = Node("noeud1")
-  X = [x]
-  y = Edge(x,x,30)
-  Y = [y]
-  Graph(name, empty(X::Vector{Node{T}} where T), empty(Y::Vector{Edge{W,T}} where T where W)) 
+function Graph(name::String; T::DataType = Int, W::DataType = Int) 
+  # x = Node("noeud1")
+  # X = [x]
+  # y = Edge(x,x,30)
+  # Y = [y]
+  # Graph(name, empty(X::Vector{Node{T}} where T), empty(Y::Vector{Edge{W,T}} where T where W))
+
+  nodes = Node{T}[]
+  edges = Edge{W,T}[]
+  Graph(name, nodes, edges)
 end
 
 """Crée un graphe sans arêtes"""
@@ -38,47 +42,40 @@ end
 
 """Crée un graphe à partir d'un dictionnaire de coordonnées qui représente les noeuds et d'un vecteur de tuples où chaque tuple représente une arête 
 (tuple[1] : nom du noeud 1, tuple[2] : nom du noeud 2, tuple[3] : poids de l'arete)"""
-function Graph(name::String, nodes::Dict{Int}{Vector{T}}, edges::Vector{Any}) where T 
-  graphe = Graph(name)
-  if nodes == Dict{Int}{Vector{T}}()
-    nodes_names::Vector[Int]=[]
-    for edge in edges
-      if edge[1] not in nodes_names
-        push!(nodes_names,edge[1])
-        noeud = Node(string(edge[1]))
-        add_node!(graphe, noeud)
-      end
-      if edge[2] in nodes_names
-        push!(nodes_names,edge[2])
-        noeud = Node(string(edge[2]))
-        add_node!(graphe, noeud)
-      end
-    end
-  else 
-    for name_n in keys(nodes)
-      noeud = Node(string(name_n),nodes[name_n])
-      add_node!(graphe, noeud)
-    end
+function Graph(name::String, nodes::Dict{Int}{T}, edges::Vector{Tuple{Int, Int, W}}) where {T, W}
+  graphe = Graph(name; T, W)
+  #println(typeof(graphe))
+  
+  for name_n in keys(nodes)
+    noeud = Node(string(name_n),nodes[name_n], name_n)
+    #show(noeud)
+    add_node!(graphe, noeud)
   end
+
+
   for edge in edges
-    node_1 = Node(edge[1])
-    node_2 = Node(edge[2])
-    for node in graphe.nodes
-      if node.name == edge[1]
-        node_1=node
-      end
-      if node.name == edge[2]
-        node_2=node
-      end
-    end
+    indice_node_1 = edge[1]
+    indice_node_2 = edge[2]
+    node_1 = get_node_from_indice(graphe, indice_node_1)
+    node_2 = get_node_from_indice(graphe, indice_node_2)
     arete = Edge(node_1, node_2, edge[3])
+    #show(arete)
     add_edge!(graphe, arete)
   end
   return graphe
 end 
 
+function get_node_from_indice(graph::Graph{T,W},indice::Int) where {T,W}
+  for node in graph.nodes
+    if node.indice == indice
+      return node
+    end
+  end
+  @warn "Le noeud n'existe pas dans le graphe."
+end
+
 """Ajoute un noeud au graphe."""
-function add_node!(graph::Graph{T,W}, node::Node{Any}) where T where W
+function add_node!(graph::Graph{T,W}, node::Node{T}) where T where W
   push!(graph.nodes, node)
   graph
 end
@@ -115,7 +112,7 @@ edges(graph::AbstractGraph) = graph.edges
 nb_edges(graph::AbstractGraph) = length(graph.edges)
 
 """Affiche un graphe"""
-function show_g(graph::Graph)
+function show(graph::Graph)
   println("Graph ", name(graph), " has ", nb_nodes(graph), " nodes and ", nb_edges(graph), " edges.")
   println("the nodes in the graph are : ")
   for node in nodes(graph)

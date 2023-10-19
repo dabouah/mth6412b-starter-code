@@ -35,5 +35,5 @@ end
 
 """Affiche une arête."""
 function show(edge::AbstractEdge)
-  println("This edge links node ", show(edge.node_1), "to node", show(edge.node_2), ", weight: ", weight(edge))
+  println("This edge links node ", indice(edge.node_1), " to node ", indice(edge.node_2), ", weight: ", weight(edge))
 end
