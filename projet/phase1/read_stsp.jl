@@ -72,8 +72,8 @@ function read_nodes(header::Dict{String}{String}, filename::String)
     end
   end
   close(file)
-  @show nodes
-  @show typeof(nodes)
+  #@show nodes
+  #@show typeof(nodes)
   return nodes
 end
 

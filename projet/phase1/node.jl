@@ -16,11 +16,26 @@ mutable struct Node{T} <: AbstractNode{T}
   name::String
   data::T
   indice::Int
+  parent::Union{Node{T}, Nothing}
 end
 
 """Crée un  noeud sans coordonnées"""
-function Node(name::String; T::DataType=Int, indice=-1)
-  Node(name, zero(T), indice)
+function Node(name::String; P::DataType=Int, indice::Int, parent::Node{T}) where T
+  Node(name, zero(P), indice, parent)
+end
+
+"""Crée un  noeud sans parent"""
+function Node(name::String, data::T, indice::Int) where T
+  node = Node(name, data, indice, nothing)
+  node.parent = node
+  node
+end
+
+"""Crée un  noeud sans coordonnées ni parent""" 
+function Node(name::String; T::DataType=Int, indice::Int) 
+  node = Node(name, zero(T), indice, nothing)
+  node.parent = node
+  node
 end
 
 # on présume que tous les noeuds dérivant d'AbstractNode
@@ -35,7 +50,10 @@ data(node::AbstractNode) = node.data
 """Renvoie l'indice du noeud."""
 indice(node::AbstractNode) = node.indice
 
+"""Renvoie le parent du noeud."""
+parent(node::AbstractNode) = node.parent
+
 """Affiche un noeud."""
 function show(node::AbstractNode)
-  println("Node ", name(node), ", data: ", data(node), ", indice: ", indice(node))
+  println("Node ", name(node), ", data: ", data(node), ", indice: ", indice(node), ", parent: ", name(parent(node)))
 end
