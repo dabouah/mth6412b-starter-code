@@ -52,7 +52,6 @@ function Graph(name::String, nodes::Dict{Int}{T}, edges::Vector{Tuple{Int, Int, 
     add_node!(graphe, noeud)
   end
 
-
   for edge in edges
     indice_node_1 = edge[1]
     indice_node_2 = edge[2]
