@@ -36,8 +36,9 @@ function Graph(name::String; T::DataType = Int, W::DataType = Int)
 end
 
 """Crée un graphe sans arêtes"""
-function Graph(name::String, nodes::Vector{Node{T}}) where T 
-  Graph(name, nodes, [])
+function Graph(name::String, nodes::Vector{Node{T}}; W::DataType = Int) where T 
+  edges = Edge{W,T}[]
+  Graph(name, nodes, edges)
 end
 
 """Crée un graphe à partir d'un dictionnaire de coordonnées qui représente les noeuds et d'un vecteur de tuples où chaque tuple représente une arête 
