@@ -81,7 +81,7 @@ function add_node!(graph::Graph{T,W}, node::Node{T}) where T where W
 end
 
 """Ajoute une arête au graphe si les noeuds existent déjà dans le graphe"""
-function add_edge!(graph::Graph{T,W}, edge::Edge{W,T}) where T where W
+function add_edge!(graph::Graph{T,W}, edge::Edge{W,T}) where {T,W}
   if edge.node_1 in graph.nodes
     if edge.node_2 in graph.nodes
       push!(graph.edges, edge)
