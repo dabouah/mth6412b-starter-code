@@ -132,7 +132,7 @@ Julia > Node a, data: 0, indice: 1, parent: a
 md"""
 #### 2 Implémentation de Kruskal 
 
-Ici nous avons créé un fonction kruskal qui prend en argument un graphe et qui va créer un autre graphe qui sera un arbre de recouvrement minimum du premier en suivant la méthode de Kruskal.
+Ici nous avons créé une fonction kruskal qui prend en argument un graphe et qui va créer un autre graphe qui sera un arbre de recouvrement minimum du premier en suivant la méthode de Kruskal.
 
 On utilise la fonction sort! qui va trier nos arêtes par ordre croissant de leur poids. Ensuite, on va passer sur toutes les arêtes pour vérifier si elles permettent d'agrandir l'arbre, si les deux noeuds de l'arête n'ont pas les mêmes racines. Si c'est le cas, on va l'ajouter au nouveau graphe et on va définir une des racines comme étant le parent de l'autre racine. Sinon, on passe juste à l'arête suivante.
 """
@@ -238,6 +238,10 @@ function Base.show(io::IO, ::MIME"image/png", w::Wow)
 write(io, read(w.filename))
 end
 end
+
+# ╔═╡ 51c00502-7181-4eef-87f2-8e77781e256f
+md"""L'arbre de recouvrement obtenu est le même que celui représenté dans les notes de cours.
+"""
 
 # ╔═╡ 55127c9f-de77-4692-86e7-03b882391e9b
 md"""Voici l'arbre de parentalité des sommets du graphe. Il a une hauteur de 4."""
@@ -395,6 +399,250 @@ end
 ```
 """
 
+# ╔═╡ 698bad60-410b-48c6-bd74-9c9fc3835a4e
+md"""
+En utilisant la compression des chemins, l'arbre de parentilité obtenu est celui ci-dessous. La hauteur est de 2, ce qui est meilleur que l'arbre sans utiliser d'heuristique d'accélération.
+"""
+
+# ╔═╡ c052e645-9d0b-4e3d-bc66-d34848aef77a
+Wow("image3.jpg")
+
+# ╔═╡ 8781fb9b-aa65-4132-85f9-6ec100f5ea95
+md"""
+#### 4 Implémentation de Prim
+
+Ici nous avons créé une fonction prim qui prend en argument un graphe et qui va créer un autre graphe qui sera un arbre de recouvrement minimum du premier en suivant la méthode de Prim.
+
+Dans les sections suivantes, nous allons voir les modifications faites aux structures de données existantes, la création d'une structure de données `Queue` et les fonctions que nous avons créées pour cela.
+"""
+
+# ╔═╡ 5e54acd9-28d9-4b52-a482-c29a9bced6d7
+md"""
+##### 4.1 Modification de la structure de données Node
+
+Nous avons, tout d'abord, deux attributs à la structure `Node` qui sont `min_weight`, qui stocke le poids de l'arête de poids minimum qui permet de lier le noeud à l'arbre de recouvrement, et `arete_min` qui stocke le nom de cette arête.
+
+```julia
+\"""Type représentant les noeuds d'un graphe.
+
+Exemple:
+
+        noeud1 = Node("James", [π, exp(1)], 1, noeud1, 2, inf, nothing)
+        noeud2 = Node("Kirk", "guitar", 2, noeud1, 1, 2, "arete1")
+        noeud3 = Node("Lars", 2, 3, noeud2, 0, 8, "arete2")
+
+\"""
+mutable struct Node{T} <: AbstractNode{T}
+  name::String
+  data::T
+  indice::Int
+  parent::Union{Node{T}, Nothing}
+  rang::Int
+  min_weight::Number
+  arete_min::Union{String, Nothing}
+end
+```
+
+Nous avons modifié les constructeurs afin qu'ils créent des noeuds sans `arete_min` et avec un `min_weight` de valeur infini.
+
+```julia
+\"""Crée un  noeud sans coordonnées\"""
+function Node(name::String; P::DataType=Int, indice::Int, parent::Node{T}) where T
+  Node(name, zero(P), indice, parent, rang(parent)-1, Inf, nothing)
+end
+
+\"""Crée un  noeud sans parent\"""
+function Node(name::String, data::T, indice::Int) where T
+  node = Node(name, data, indice, nothing, 0, Inf, nothing)
+  node.parent = node
+  node
+end
+
+\"""Crée un  noeud sans coordonnées ni parent\""" 
+function Node(name::String; T::DataType=Int, indice::Int) 
+  node = Node(name, zero(T), indice, nothing, 0, Inf, nothing)
+  node.parent = node
+  node
+end
+```
+"""
+
+# ╔═╡ 1b6f2c69-296a-407c-b431-0f6424fa1e5b
+md"""
+##### 4.2 Structure de données `Queue`
+
+Nous avons créé une structure de données `Queue` qui fonctionne comme une file de priorité qui stocke une liste de `Node` dont la priorité est l'argument `min_weight` du noeud. Le noeud qui sera priorisé est celiui qui aura le plus petit `min_weight`.
+
+La fonction `popmin!()` retire de notre file l'élément à prioriser et nous le renvoie.
+
+```julia
+\"""Type abstrait dont d'autres types de piles dériveront.\"""
+abstract type AbstractQueue{T} end
+
+\"""Type représentant une file avec des éléments de type T.\"""
+mutable struct Queue{T} <: AbstractQueue{T}
+    items::Vector{Node{T}}
+end
+
+Queue{T}() where T = Queue(Node{T}[])
+
+\"""Retire et renvoie l'élément ayant la plus haute priorité.\"""
+function popmin!(q::Queue{T}) where T
+    lowest = q.items[1]
+    for item in q.items
+        if min_weight(item) < min_weight(lowest)
+            lowest = item
+        end
+    end
+    deleteat!(q.items, findall(x->x==lowest,q.items))
+    lowest
+end
+```
+"""
+
+# ╔═╡ 43f88801-47d2-4af2-a894-0d2c7b272fd6
+md"""
+
+##### 4.3 Fonction `prim()` et complément
+
+Nous nous sommes rendues compte qu'il serait nécessaire de mettre à jour les `min_weight` de nos noeuds à chaque itération (ajout d'une arête au graphe), alors nous avons créé une fonction `update_min_weight()` qui met à jour les attributs `parent`, `min_weight` et `arete_min`.
+
+Pour ce faire, on boucle sur les arêtes, et on va mettre à jour les arguments des noeuds appartenant à la liste des noeuds non présents dans l'arbre de recouvrement, si l'autre noeud de l'arête en fait partie. 
+
+```julia
+\"""Met à jour les poids minimum de tous les noeuds\"""
+function update_min_weight(graph::Graph{T,W}, file_priorite::Queue{T}, noeuds_couvrant::Vector{Node{T}}) where {T,W}
+    for arete in edges(graph)
+        noeud_un = nodes(arete)[1]
+        noeud_deux = nodes(arete)[2]
+        if noeud_un in file_priorite.items && noeud_deux in noeuds_couvrant
+            if min_weight(noeud_un) > weight(arete)
+                noeud_un.min_weight = weight(arete)
+                noeud_un.parent = noeud_deux
+                noeud_un.arete_min = name(arete)
+            end
+        elseif noeud_deux in file_priorite.items && noeud_un in noeuds_couvrant
+            if min_weight(noeud_deux) > weight(arete)
+                noeud_deux.min_weight = weight(arete)
+                noeud_deux.parent = noeud_un
+                noeud_deux.arete_min = name(arete)
+            end
+        end
+    end
+end
+```
+
+Cette fonction est utilisée par la fonction `prim()`, où nous définissons un nouveau graphe avec tous les noeuds du graphe initiale mais sans arêtes, une file de priorité contenant tous les noeuds du graphe, une liste des noeuds qui font déjà partie de l'arbre de recouvrement (vide à l'initialisation).
+
+Nous définissons ensuite une source (premier noeud de la file), que nous ajoutons à l'arbre de recouvrement. Nous allons alors faire des itérations pour ajouter les arêtes pertinentes selon l'algorithme de Prim (mise à jour des poids, recherche du noeud de poids minimum, ajout de l'arête au graphe à renvoyer, ajout du noeud aux noeuds couverts par l'arbre de recouvrement).
+
+```julia
+\"""Renvoie l'arbre de recouvrement minimal d'un graphe connexe en utilisant l'algorithme de Kruskal\"""
+function prim(graphe::Graph{T,W}) where {T,W}
+    noeuds = nodes(graphe)
+    noeuds[1].min_weight = 0
+    noeuds[1].parent = noeuds[1]
+    file_priorite = Queue(noeuds)
+    prem_noeud = popmin!(file_priorite)
+    noeuds_couvrant = Node{T}[]
+    push!(noeuds_couvrant,prem_noeud)
+    edges_g = Edge{W,T}[]
+    copie_noeuds = deepcopy(noeuds)
+    graphe_prim = Graph("Prim de " * name(graphe), copie_noeuds, edges_g)
+    update_min_weight(graphe, file_priorite, noeuds_couvrant)
+    while !isempty(file_priorite.items)
+        noeud_a_ajouter = popmin!(file_priorite)
+        push!(noeuds_couvrant,noeud_a_ajouter)
+        for arete in edges(graphe)
+            if name(arete) == arete_min(noeud_a_ajouter)
+                push!(graphe_prim.edges, arete)
+            end
+        end
+        update_min_weight(graphe, file_priorite, noeuds_couvrant)
+    end
+    graphe_prim
+end
+```
+"""
+
+# ╔═╡ 78e28996-5e3a-48ce-8dfb-4a40898c36cf
+md"""
+Nous l'avons testé sur l'exemple du cours :
+"""
+
+# ╔═╡ 981ca644-fbc0-489f-b3d9-dd8304caafd1
+md"""
+
+```julia
+include("node.jl")
+include("edge.jl")
+include("graph.jl")
+include("prim.jl")
+include("queue.jl")
+
+a = Node("a",0,1)
+b = Node("b",0,2)
+c = Node("c",0,3)
+d = Node("d",0,4)
+e = Node("e",0,5)
+f = Node("f",0,6)
+g = Node("g",0,7)
+h = Node("h",0,8)
+i = Node("i",0,9)
+nodes_g = [a, b, c, d, e, f, g, h, i]
+
+ab = Edge(a, b, 4)
+ah = Edge(a, h, 8)
+bc = Edge(b, c, 8)
+bh = Edge(b, h, 11)
+cd = Edge(c, d, 7)
+cf = Edge(c, f, 4)
+ci = Edge(c, i, 2)
+de = Edge(d, e, 9)
+df = Edge(d, f, 14)
+ef = Edge(e, f, 10)
+fg = Edge(f, g, 2)
+gh = Edge(g, h, 1)
+gi = Edge(g, i, 6)
+hi = Edge(h, i, 7)
+edges_g = [ab, ah, bc, bh, cd, cf, ci, de, df, ef, fg, gh, gi, hi]
+
+exemple_diapo = Graph("nom",nodes_g,edges_g)
+
+exemple_diapo_prim = prim(exemple_diapo)
+show(exemple_diapo_prim)
+
+```
+
+```julia
+Julia> Graph Prim de nom has 8 nodes and 8 edges.
+the nodes in the graph are : 
+Node b, data: 0, indice: 2, parent: b
+Node c, data: 0, indice: 3, parent: c
+Node d, data: 0, indice: 4, parent: d
+Node e, data: 0, indice: 5, parent: e
+Node f, data: 0, indice: 6, parent: f
+Node g, data: 0, indice: 7, parent: g
+Node h, data: 0, indice: 8, parent: h
+Node i, data: 0, indice: 9, parent: i
+the edges in the graph are : 
+This edge links node 1 to node 2, weight: 4
+This edge links node 2 to node 3, weight: 8
+This edge links node 3 to node 9, weight: 2
+This edge links node 3 to node 6, weight: 4
+This edge links node 6 to node 7, weight: 2
+This edge links node 7 to node 8, weight: 1
+This edge links node 3 to node 4, weight: 7
+This edge links node 4 to node 5, weight: 9
+```
+
+"""
+
+# ╔═╡ 626cb357-f10c-458a-8b30-a79018a30b9e
+md"""
+L'arbre de recouvrement obtenu est le même que celui représenté dans les notes de cours.
+"""
+
 # ╔═╡ Cell order:
 # ╟─01664722-7669-11ee-3c47-c1263203734f
 # ╟─9a08b5c6-0a74-451f-91b4-77d20ac1be6f
@@ -414,10 +662,11 @@ end
 # ╟─4d76d7ee-2ab8-4bc5-a66b-1fc673a5b3d2
 # ╟─2b783399-939f-4e01-baee-52fcb2272aba
 # ╟─3677a130-e7f1-4180-8438-9b0dd24fb3a9
+# ╟─51c00502-7181-4eef-87f2-8e77781e256f
 # ╟─55127c9f-de77-4692-86e7-03b882391e9b
 # ╟─4deebe2d-5e7a-4460-bcef-84ce632776d3
-# ╟─c93c005d-4e3a-4fd0-9057-3d37af7d7b0f
-# ╟─93749c4b-f78a-48f3-a92a-50e317c56dd8
+# ╠═c93c005d-4e3a-4fd0-9057-3d37af7d7b0f
+# ╠═93749c4b-f78a-48f3-a92a-50e317c56dd8
 # ╟─5a39f6e1-b3ad-4496-b652-3789772785ea
 # ╟─af3f28e6-73fa-4e73-a82f-b077413a7053
 # ╟─73e1d855-2f41-4dc8-b6c9-e47b3a1b8cda
@@ -430,3 +679,12 @@ end
 # ╟─3d471cd5-f7d1-4c3c-835f-2a003b995ff4
 # ╟─72ab8012-8928-4e0d-b024-8ba2b807d532
 # ╟─d4424abd-33dc-478a-ba82-f26e620172d2
+# ╟─698bad60-410b-48c6-bd74-9c9fc3835a4e
+# ╟─c052e645-9d0b-4e3d-bc66-d34848aef77a
+# ╟─8781fb9b-aa65-4132-85f9-6ec100f5ea95
+# ╟─5e54acd9-28d9-4b52-a482-c29a9bced6d7
+# ╟─1b6f2c69-296a-407c-b431-0f6424fa1e5b
+# ╟─43f88801-47d2-4af2-a894-0d2c7b272fd6
+# ╟─78e28996-5e3a-48ce-8dfb-4a40898c36cf
+# ╟─981ca644-fbc0-489f-b3d9-dd8304caafd1
+# ╟─626cb357-f10c-458a-8b30-a79018a30b9e
