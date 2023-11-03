@@ -17,11 +17,12 @@ mutable struct Edge{W,T} <: AbstractEdge{W,T}
   node_1::Node{T}
   node_2::Node{T}
   weight::W
+  name::String
 end
 
-"""Crée une arête avec un poids par défaut"""
-function Edge(node_1::Node{T}, node_2::Node{T}) where T
-    Edge(node_1, node_2, 9999999)
+"""Crée une arete sans nom"""
+function Edge(node_1::Node{T}, node_2::Node{T}, weight::W) where {W,T}
+  Edge(node_1::Node{T}, node_2::Node{T}, weight::W, name(node_1)*name(node_2))
 end
 
 # on présume que tous les arêtes dérivant d'AbstractEdge
@@ -32,6 +33,14 @@ nodes(edge::AbstractEdge) = [edge.node_1, edge.node_2]
 
 """Renvoie le poids de l'arête."""
 weight(edge::AbstractEdge) = edge.weight
+
+"""Renvoie le nom de l'arête."""
+name(edge::AbstractEdge) = edge.name
+
+"""Crée une arête avec un poids par défaut"""
+function Edge(node_1::Node{T}, node_2::Node{T}) where T
+    Edge(node_1, node_2, 9999999)
+end
 
 """Affiche une arête."""
 function show(edge::AbstractEdge)
