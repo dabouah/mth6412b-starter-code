@@ -1,6 +1,9 @@
 """Renvoie l'arbre de recouvrement minimal d'un graphe connexe en utilisant l'algorithme de Kruskal"""
 function prim(graphe::Graph{T,W}) where {T,W}
     noeuds = nodes(graphe)
+    for noeud in noeuds
+        noeud.parent = nothing
+    end
     noeuds[1].min_weight = 0
     noeuds[1].parent = noeuds[1]
     file_priorite = Queue(noeuds)
@@ -10,36 +13,42 @@ function prim(graphe::Graph{T,W}) where {T,W}
     edges_g = Edge{W,T}[]
     copie_noeuds = deepcopy(noeuds)
     graphe_prim = Graph("Prim de " * name(graphe), copie_noeuds, edges_g)
-    update_min_weight(graphe, file_priorite, noeuds_couvrant)
+    update_min_weight!(graphe, file_priorite, noeuds_couvrant)
+    show(graphe)
     while !isempty(file_priorite.items)
         noeud_a_ajouter = popmin!(file_priorite)
+        show(noeud_a_ajouter)
         push!(noeuds_couvrant,noeud_a_ajouter)
         for arete in edges(graphe)
             if name(arete) == arete_min(noeud_a_ajouter)
                 push!(graphe_prim.edges, arete)
+                println("ok")
             end
         end
-        update_min_weight(graphe, file_priorite, noeuds_couvrant)
+        update_min_weight!(graphe, file_priorite, noeuds_couvrant)
+        show(graphe)
     end
     graphe_prim
 end
 
 """Met à jour les poids minimum de tous les noeuds"""
-function update_min_weight(graph::Graph{T,W}, file_priorite::Queue{T}, noeuds_couvrant::Vector{Node{T}}) where {T,W}
+function update_min_weight!(graph::Graph{T,W}, file_priorite::Queue{T}, noeuds_couvrant::Vector{Node{T}}) where {T,W}
     for arete in edges(graph)
         noeud_un = nodes(arete)[1]
         noeud_deux = nodes(arete)[2]
-        if noeud_un in file_priorite.items && noeud_deux in noeuds_couvrant
-            if min_weight(noeud_un) > weight(arete)
-                noeud_un.min_weight = weight(arete)
-                noeud_un.parent = noeud_deux
-                noeud_un.arete_min = name(arete)
-            end
-        elseif noeud_deux in file_priorite.items && noeud_un in noeuds_couvrant
-            if min_weight(noeud_deux) > weight(arete)
-                noeud_deux.min_weight = weight(arete)
-                noeud_deux.parent = noeud_un
-                noeud_deux.arete_min = name(arete)
+        for prio in file_priorite.items
+            for couvr in noeuds_couvrant
+                if name(noeud_un) == name(prio) && name(noeud_deux) == name(couvr) && min_weight(noeud_un) > weight(arete)
+                    println("ok1")
+                    noeud_un.min_weight = weight(arete)
+                    noeud_un.parent = noeud_deux
+                    noeud_un.arete_min = name(arete)
+                elseif name(noeud_deux) == name(prio) && name(noeud_un) == name(couvr) && min_weight(noeud_deux) > weight(arete)
+                    println("ok2")
+                    noeud_deux.min_weight = weight(arete)
+                    noeud_deux.parent = noeud_un
+                    noeud_deux.arete_min = name(arete)
+                end
             end
         end
     end

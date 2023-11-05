@@ -7,12 +7,12 @@ function kruskal(graphe::Graph{T,W}) where {T,W}
     liste_edges = sort!(liste_edges, by = x -> x.weight)
     for arete in liste_edges
         if weight(arete) > 0
-            racine1 = root(nodes(arete)[1])
-            racine2 = root(nodes(arete)[2])
+            racine1 = root!(nodes(arete)[1])
+            racine2 = root!(nodes(arete)[2])
             if racine1 != racine2
                 add_edge!(graphe_kruskal,arete)
-                racine1.parent=racine2
-                #union_via_rang(racine1, racine2)
+                #racine1.parent=racine2
+                union_via_rang(racine1, racine2)
             end
         end
     end

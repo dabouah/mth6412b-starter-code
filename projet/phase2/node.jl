@@ -23,8 +23,8 @@ mutable struct Node{T} <: AbstractNode{T}
 end
 
 """Crée un  noeud sans coordonnées"""
-function Node(name::String; P::DataType=Int, indice::Int, parent::Node{T}) where T
-  Node(name, zero(P), indice, parent, rang(parent)-1, Inf, nothing)
+function Node(name::String, indice::Int, parent::Node{T}; P::DataType=Int) where T
+  Node(name, zero(P), indice, parent, rang(parent) > 0 ? rang(parent)-1 : 0 , Inf, nothing)
 end
 
 """Crée un  noeud sans parent"""
@@ -35,14 +35,24 @@ function Node(name::String, data::T, indice::Int) where T
 end
 
 """Crée un  noeud sans coordonnées ni parent""" 
-function Node(name::String; T::DataType=Int, indice::Int) 
-  node = Node(name, zero(T), indice, nothing, 0, Inf, nothing)
+function Node(name::String, indice::Int; P::DataType=Int)
+  node = Node(name, zero(P), indice, nothing, 0, Inf, nothing)
   node.parent = node
   node
 end
 
 """Renvoie la racine d'un arbre"""
 function root(node::AbstractNode)
+  root = node
+  #rang_min = rang(root)
+  while root != parent(root)
+    root = parent(root)
+  end
+  root
+end
+
+"""Renvoie la racine d'un arbre"""
+function root!(node::AbstractNode)
   root = node
   remontee = Node[]
   #rang_min = rang(root)
@@ -83,5 +93,5 @@ arete_min(node::AbstractNode) = node.arete_min
 
 """Affiche un noeud."""
 function show(node::AbstractNode)
-  println("Node ", name(node), ", data: ", data(node), ", indice: ", indice(node), ", parent: ", ( isnothing(parent(node)) ? "nothing" : name(parent(node))))
+  println("Node ", name(node), ", data: ", data(node), ", indice: ", indice(node), ", parent: ", ( isnothing(parent(node)) ? "nothing" : name(parent(node))), ", poids min: ", min_weight(node), ", arete: ", arete_min(node))
 end

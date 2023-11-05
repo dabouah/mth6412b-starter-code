@@ -7,12 +7,12 @@ abstract type AbstractGraph{T,W} end
 
 Exemple :
 
-    node1 = Node("Joe", 3.14)
-    node2 = Node("Steve", exp(1))
-    node3 = Node("Jill", 4.12)
-    edge1 = Edge(node2, node3, 10)
-    edge2 = Edge(node1, node2, 25)
-    G = Graph("Family tree", [node1, node2, node3], [edge1,edge2])
+    noeud1 = Node("James", [4, 6], 1, noeud1, 2, inf, nothing)
+    noeud2 = Node("Kirk", [8, 2], 2, noeud1, 1, 2, "arete1")
+    noeud3 = Node("Lars", [10, 16], 3, noeud2, 0, 8, "arete2")
+    edge1 = Edge(noeud2, noeud3, 10)
+    edge2 = Edge(noeud1, noeud2, 25)
+    G = Graph("Family tree", [noeud1, noeud2, noeud3], [edge1,edge2])
 
 Attention, tous les noeuds doivent avoir des données de même type.
 """
@@ -23,7 +23,7 @@ mutable struct Graph{T,W} <: AbstractGraph{T,W}
 end
 
 """Crée un graphe sans noeuds et sans arêtes"""
-function Graph(name::String; T::DataType = Int, W::DataType = Int) 
+function Graph(name::String; T::DataType = Int, W::DataType = Number) 
   # x = Node("noeud1")
   # X = [x]
   # y = Edge(x,x,30)
@@ -36,7 +36,7 @@ function Graph(name::String; T::DataType = Int, W::DataType = Int)
 end
 
 """Crée un graphe sans arêtes"""
-function Graph(name::String, nodes::Vector{Node{T}}; W::DataType = Int) where T 
+function Graph(name::String, nodes::Vector{Node{T}}; W::DataType = Number) where T 
   edges = Edge{W,T}[]
   Graph(name, nodes, edges)
 end
@@ -65,6 +65,7 @@ function Graph(name::String, nodes::Dict{Int}{T}, edges::Vector{Tuple{Int, Int, 
   return graphe
 end 
 
+"""Trouve le noeud dont l'indice est 'indice' """
 function get_node_from_indice(graph::Graph{T,W},indice::Int) where {T,W}
   for node in graph.nodes
     if node.indice == indice
