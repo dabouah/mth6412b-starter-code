@@ -14,19 +14,21 @@ function prim(graphe::Graph{T,W}) where {T,W}
     copie_noeuds = deepcopy(noeuds)
     graphe_prim = Graph("Prim de " * name(graphe), copie_noeuds, edges_g)
     update_min_weight!(graphe, file_priorite, noeuds_couvrant)
-    show(graphe)
+    #show(graphe)
     while !isempty(file_priorite.items)
         noeud_a_ajouter = popmin!(file_priorite)
-        show(noeud_a_ajouter)
+        #show(noeud_a_ajouter)
         push!(noeuds_couvrant,noeud_a_ajouter)
         for arete in edges(graphe)
+            # println(name(arete))
+            # println(arete_min(noeud_a_ajouter))
             if name(arete) == arete_min(noeud_a_ajouter)
                 push!(graphe_prim.edges, arete)
                 println("ok")
             end
         end
         update_min_weight!(graphe, file_priorite, noeuds_couvrant)
-        show(graphe)
+        #show(graphe)
     end
     graphe_prim
 end
@@ -40,14 +42,17 @@ function update_min_weight!(graph::Graph{T,W}, file_priorite::Queue{T}, noeuds_c
             for couvr in noeuds_couvrant
                 if name(noeud_un) == name(prio) && name(noeud_deux) == name(couvr) && min_weight(noeud_un) > weight(arete)
                     println("ok1")
-                    noeud_un.min_weight = weight(arete)
-                    noeud_un.parent = noeud_deux
-                    noeud_un.arete_min = name(arete)
+                    prio.min_weight = weight(arete)
+                    prio.parent = noeud_deux
+                    prio.arete_min = name(arete)
                 elseif name(noeud_deux) == name(prio) && name(noeud_un) == name(couvr) && min_weight(noeud_deux) > weight(arete)
                     println("ok2")
-                    noeud_deux.min_weight = weight(arete)
-                    noeud_deux.parent = noeud_un
-                    noeud_deux.arete_min = name(arete)
+                    prio.min_weight = weight(arete)
+                    #println(min_weight(noeud_deux))
+                    prio.parent = noeud_un
+                    #show(parent(noeud_deux))
+                    prio.arete_min = name(arete)
+                    #println(arete_min(noeud_deux))
                 end
             end
         end
