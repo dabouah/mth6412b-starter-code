@@ -386,7 +386,7 @@ $P ≤ \frac{n}{2^k}$
 
 Soit le rang maximal ($R$) du graphe, on aura nécessairement un seul noeud de rang $R$, celui-ci sera la racine. On a donc, selon l'équation au dessus:
 
-$1 ≤ \frac{n}{2^k}$
+$1 ≤ \frac{n}{2^R}$
 
 En appliquant le $\log$ de chaque côté de cette équation, on trouve:
 
