@@ -11,8 +11,8 @@ function kruskal(graphe::Graph{T,W}) where {T,W}
             racine2 = root!(nodes(arete)[2])
             if racine1 != racine2
                 add_edge!(graphe_kruskal,arete)
-                #racine1.parent=racine2
-                union_via_rang(racine1, racine2)
+                racine1.parent=racine2
+                # union_via_rang(racine1, racine2)
             end
         end
     end

@@ -10,7 +10,7 @@ Exemple:
 
         noeud1 = Node("James", [4, 6], 1, noeud1, 2, inf, nothing)
         noeud2 = Node("Kirk", [8, 2], 2, noeud1, 1, 2, "arete1")
-        arête = Edge(noeud_1, noeud_2, 10)
+        arête = Edge(noeud_1, noeud_2, 10, "noeud_1-noeud_2")
 
 """
 mutable struct Edge{W,T} <: AbstractEdge{W,T}
@@ -22,12 +22,12 @@ end
 
 """Crée une arete sans nom"""
 function Edge(node_1::Node{T}, node_2::Node{T}, weight::W) where {W,T}
-  Edge(node_1::Node{T}, node_2::Node{T}, weight::W, name(node_1)*name(node_2))
+  Edge(node_1::Node{T}, node_2::Node{T}, weight::W, name(node_1)*"-"*name(node_2))
 end
 
 """Crée une arête avec un poids par défaut"""
 function Edge(node_1::Node{T}, node_2::Node{T}) where T
-    Edge(node_1, node_2, Inf, name(node_1)*name(node_2))
+    Edge(node_1, node_2, Inf, name(node_1)*"-"*name(node_2))
 end
 
 # on présume que tous les arêtes dérivant d'AbstractEdge
@@ -45,5 +45,5 @@ name(edge::AbstractEdge) = edge.name
 
 """Affiche une arête."""
 function show(edge::AbstractEdge)
-  println("This edge links node ", indice(edge.node_1), " to node ", indice(edge.node_2), ", weight: ", weight(edge))
+  println("This edge ", name(edge)," links node ", indice(edge.node_1), " to node ", indice(edge.node_2), ", weight: ", weight(edge))
 end

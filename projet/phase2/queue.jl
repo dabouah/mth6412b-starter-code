@@ -16,7 +16,7 @@ function popmin!(q::Queue{T}) where T
             lowest = item
         end
     end
-    deleteat!(q.items, findall(x->x==lowest,q.items))
+    deleteat!(q.items, findfirst(x->x==lowest,q.items))
     lowest
 end
 

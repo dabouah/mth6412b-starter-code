@@ -112,6 +112,15 @@ edges(graph::AbstractGraph) = graph.edges
 """Renvoie le nombre d'arêtes du graphe."""
 nb_edges(graph::AbstractGraph) = length(graph.edges)
 
+"""Renvoie la somme des poids des arêtes présentes dans le graphe."""
+function cost(graph::AbstractGraph)
+  cout = 0
+  for arete in edges(graph)
+    cout += weight(arete)
+  end
+  cout
+end
+
 """Affiche un graphe"""
 function show(graph::Graph)
   println("Graph ", name(graph), " has ", nb_nodes(graph), " nodes and ", nb_edges(graph), " edges.")
