@@ -1119,7 +1119,7 @@ L'algorithme de Kruskal accompagné de l'union via le rang (comme nous l'avons i
 # ╟─09c00bd1-1533-4b76-b5ef-6aa267ccc415
 # ╟─fe52fa28-1f67-480f-98ae-269bcecefde1
 # ╟─2641f649-0ce0-4f59-a393-8fedbeef1762
-# ╟─22557f38-acc5-476d-9447-1cbe1cad2955
+# ╠═22557f38-acc5-476d-9447-1cbe1cad2955
 # ╟─a83e6b35-ed05-46af-97e0-1344ae23ba42
 # ╟─abc059d6-414e-47e4-b1a5-13455099f9fc
 # ╟─0234b297-c9d1-4730-8aeb-9208d88e5482
