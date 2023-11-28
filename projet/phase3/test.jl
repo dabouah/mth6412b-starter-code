@@ -7,6 +7,7 @@ include("read_stsp.jl")
 include("kruskal.jl")
 include("queue.jl")
 include("prim.jl")
+include("rsl.jl")
 
 """Tests unitaires de la structure Node"""
 
@@ -49,13 +50,13 @@ c.parent = b
 """Tests unitaires de la structure Edge"""
 
 ab = Edge(a, b, 100.0)
-@test name(ab) == "ab"
+@test name(ab) == "a-b"
 @test weight(ab) == 100.0
 @test nodes(ab)[1] == a
 @test nodes(ab)[2] == b
 
 ac = Edge(a, c)
-@test name(ac) == "ac"
+@test name(ac) == "a-c"
 @test weight(ac) == Inf
 @test nodes(ac)[1] == a
 @test nodes(ac)[2] == c
@@ -154,11 +155,11 @@ k = kruskal(g)
 @test name(k) == "Kruskal de test"
 @test nodes(k) == [a, b, h]
 @test edges(k) == [ab, ah]
-@test parent(h) == b
+@test parent(h) == h
 @test parent(a) == b
-@test parent(b) == b
+@test parent(b) == h
 @test rang(a) == 0
-@test rang(b) == 1
+@test rang(b) == 0
 @test rang(h) == 0
 
 """Tests unitaires du fichier prim"""
@@ -201,5 +202,7 @@ p = prim(g)
 @test name(nodes(p)[1]) == "a"
 @test name(nodes(p)[2]) == "b"
 @test name(nodes(p)[3]) == "h"
-@test name(edges(p)[1]) == "ab"
-@test name(edges(p)[2]) == "ah"
+@test name(edges(p)[1]) == "a-b"
+@test name(edges(p)[2]) == "a-h"
+
+@test enfants(p,a) == [b,h]
