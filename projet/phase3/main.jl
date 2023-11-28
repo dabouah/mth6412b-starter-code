@@ -7,6 +7,10 @@ include("read_stsp.jl")
 include("kruskal.jl")
 include("queue.jl")
 include("prim.jl")
+include("2-opt.jl")
+include("rsl.jl")
+include("copy.jl")
+include("hk.jl")
 
 file = "brg180.tsp"
 
@@ -15,6 +19,7 @@ chemin = "/Users/daphneboulanger/GIT/mth6412b-starter-code/instances/stsp/"*file
 head = read_header(chemin)
 noeuds = read_nodes(head, chemin)
 graphe, graph_nodes, graph_edges = read_stsp(chemin)
+
 # show(graphe)
 # STSP_prim = prim(deepcopy(graphe))
 # show(STSP_prim)
@@ -51,15 +56,42 @@ graphe, graph_nodes, graph_edges = read_stsp(chemin)
 # hi = Edge(h, i, 7)
 # edges_g = [ab, ah, bc, bh, cd, cf, ci, de, df, ef, fg, gh, gi, hi]
 
-# exemple_diapo = Graph("exemple_diapo1",nodes_g,edges_g)
-# exemple_diapo2 = Graph("exemple_diapo2",deepcopy(nodes_g),deepcopy(edges_g))
+# exemple_diapo1 = Graph("exemple_diapo1",nodes_g,edges_g)
+# exemple_diapo2 = Graph("exemple_diapo2",nodes_g,edges_g)
 
 # exemple_diapo_prim = prim(exemple_diapo1)
 # show(exemple_diapo_prim)
-#show(exemple_diapo1)
+# println(cost(exemple_diapo_prim))
 
-# exemple_diapo_kruskal = kruskal(exemple_diapo2)
+# exemple_diapo_kruskal = kruskal(exemple_diapo1)
 # show(exemple_diapo_kruskal)
+# println(cost(exemple_diapo_kruskal))
 
 # @benchmark prim(deepcopy(graphe))
-@benchmark kruskal(deepcopy(graphe))
+# @benchmark kruskal(deepcopy(graphe))
+# @benchmark kruskal_cc(deepcopy(graphe))
+
+# arbre = kruskal(graphe)
+# gr17_rsl = rsl(graphe, "k", 6)
+# show(arbre)
+# show(gr17_rsl)
+# #show(graphe)
+
+# gr17_hk = hk(graphe, 1)
+# show(gr17_hk)
+# #show(graphe)
+
+# @benchmark rsl(graphe, "k", 2)
+
+# for noeud in nodes(graphe)
+#     println(cost(rsl(graphe, "k", indice(noeud)))," ", indice(noeud))
+# end
+
+rsl(graphe, "k", 71)
+
+# @benchmark rsl(graphe, "k", 2)
+# print(cost(hk(graphe, 15, "k" )))
+
+
+# println(cost(graphe))
+# println(cost(gr17_rsl))
