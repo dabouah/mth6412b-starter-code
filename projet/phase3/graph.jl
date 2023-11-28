@@ -81,6 +81,12 @@ function add_node!(graph::Graph{T,W}, node::Node{T}) where T where W
   graph
 end
 
+"""Retire un noeud au graphe."""
+function remove_node!(graph::Graph{T,W}, node::Node{T}) where T where W
+  pop!(graph.nodes, node)
+  graph
+end
+
 """Ajoute une arête au graphe si les noeuds existent déjà dans le graphe"""
 function add_edge!(graph::Graph{T,W}, edge::Edge{W,T}) where {T,W}
   if edge.node_1 in graph.nodes
@@ -92,6 +98,12 @@ function add_edge!(graph::Graph{T,W}, edge::Edge{W,T}) where {T,W}
   else 
     "Attention : un noeud de l'arête n'existe pas dans le graphe"
   end
+end
+
+"""Retire un noeud au graphe."""
+function remove_edge!(graph::Graph{T,W}, edge::Edge{W,T}) where T where W
+  pop!(graph.nodes, edge)
+  graph
 end
 
 # on présume que tous les graphes dérivant d'AbstractGraph
