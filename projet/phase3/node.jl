@@ -51,20 +51,39 @@ function root(node::AbstractNode)
   root
 end
 
+# """Renvoie la racine d'un arbre"""
+# function root(node::AbstractNode)
+#   if parent(node) != node
+#     return root(parent(node))
+#   else
+#     return node
+#   end
+# end
+
+# """Renvoie la racine d'un arbre"""
+# function root!(node::AbstractNode)
+#   root = node
+#   remontee = Node[]
+#   #rang_min = rang(root)
+#   while root != parent(root)
+#     push!(remontee,root)
+#     root = parent(root)
+#   end
+#   for noeud in remontee
+#     noeud.parent = root
+#     #noeud.rang = rang_min
+#   end
+#   root
+# end
+
 """Renvoie la racine d'un arbre"""
-function root!(node::AbstractNode)
-  root = node
-  remontee = Node[]
-  #rang_min = rang(root)
-  while root != parent(root)
-    push!(remontee,root)
-    root = parent(root)
+function root!(node::AbstractNode{T}) where T
+  if parent(node) != node
+    r = root!(parent(node))
+    node.parent=r
+    return r
   end
-  for noeud in remontee
-    noeud.parent = root
-    #noeud.rang = rang_min
-  end
-  root
+  return node
 end
 
 # on présume que tous les noeuds dérivant d'AbstractNode
