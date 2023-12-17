@@ -133,6 +133,70 @@ function cost(graph::AbstractGraph)
   cout
 end
 
+"""Transforme un cycle en une liste d'indices"""
+function create_tour(graph::AbstractGraph)
+  tour = [0, indice(nodes(edges(graph)[1])[1])]
+  liste_aretes = Edge[]
+  for arete in graph.edges
+      push!(liste_aretes,arete)
+  end
+  noeud = indice(nodes(edges(graph)[1])[2])
+  deleteat!(liste_aretes, findfirst(x->x==edges(graph)[1],liste_aretes))
+  while liste_aretes != []
+    for arete in liste_aretes
+      if noeud == indice(nodes(arete)[1])
+        push!(tour,noeud)
+        noeud = indice(nodes(arete)[2])
+        deleteat!(liste_aretes, findfirst(x->x==arete,liste_aretes))
+      elseif noeud == indice(nodes(arete)[2])
+        push!(tour,noeud)
+        noeud = indice(nodes(arete)[1])
+        deleteat!(liste_aretes, findfirst(x->x==arete,liste_aretes))
+      end
+    end
+  end
+  deleteat!(tour, findfirst(x->x==0,tour))
+  return tour
+end
+
+"""Transforme un cycle en une liste d'indices"""
+function create_tour_zero(graph::AbstractGraph)
+  tour = [ indice(nodes(edges(graph)[1])[1])-1]
+  liste_aretes = Edge[]
+  for arete in graph.edges
+      push!(liste_aretes,arete)
+  end
+  noeud = indice(nodes(edges(graph)[1])[2])
+  deleteat!(liste_aretes, findfirst(x->x==edges(graph)[1],liste_aretes))
+  while liste_aretes != []
+    for arete in liste_aretes
+      if noeud == indice(nodes(arete)[1])
+        push!(tour,noeud-1)
+        noeud = indice(nodes(arete)[2])
+        deleteat!(liste_aretes, findfirst(x->x==arete,liste_aretes))
+      elseif noeud == indice(nodes(arete)[2])
+        push!(tour,noeud-1)
+        noeud = indice(nodes(arete)[1])
+        deleteat!(liste_aretes, findfirst(x->x==arete,liste_aretes))
+      end
+    end
+  end
+  deleteat!(tour, findfirst(x->x==0,tour))
+  return tour
+end
+
+"""Fonction qui renvoit l'arete de plus gros poids"""
+function arete_max(graph::AbstractGraph)
+  arete_maxi = edges(graph)[1]
+  for edge in edges(graph)
+    if weight(edge) > weight(arete_maxi)
+      arete_maxi = edge
+    end
+  end
+  return arete_maxi
+end
+
+
 """Affiche un graphe"""
 function show(graph::Graph)
   println("Graph ", name(graph), " has ", nb_nodes(graph), " nodes and ", nb_edges(graph), " edges.")

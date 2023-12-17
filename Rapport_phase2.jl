@@ -1073,10 +1073,10 @@ L'algorithme de Kruskal accompagné de l'union via le rang (comme nous l'avons i
 # ╟─c6ba0074-4bfd-417c-8b2f-d6a2c2cd23f8
 # ╟─4d76d7ee-2ab8-4bc5-a66b-1fc673a5b3d2
 # ╟─2b783399-939f-4e01-baee-52fcb2272aba
-# ╟─3677a130-e7f1-4180-8438-9b0dd24fb3a9
+# ╠═3677a130-e7f1-4180-8438-9b0dd24fb3a9
 # ╟─51c00502-7181-4eef-87f2-8e77781e256f
 # ╟─55127c9f-de77-4692-86e7-03b882391e9b
-# ╟─4deebe2d-5e7a-4460-bcef-84ce632776d3
+# ╠═4deebe2d-5e7a-4460-bcef-84ce632776d3
 # ╟─c93c005d-4e3a-4fd0-9057-3d37af7d7b0f
 # ╟─93749c4b-f78a-48f3-a92a-50e317c56dd8
 # ╟─5a39f6e1-b3ad-4496-b652-3789772785ea

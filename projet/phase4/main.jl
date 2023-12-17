@@ -1,4 +1,9 @@
 using BenchmarkTools
+using FileIO
+using Images
+using ImageView
+using ImageMagick
+
 
 include("node.jl")
 include("edge.jl")
@@ -11,13 +16,14 @@ include("2-opt.jl")
 include("rsl.jl")
 include("copy.jl")
 include("hk.jl")
+include("tools.jl")
 
 dossier1 = "instances/stsp/"
 dossier2 = "tsp/instances/"
 file1 = "gr17.tsp"
 file2 = "abstract-light-painting"
 
-chemin = "/Users/daphneboulanger/GIT/mth6412b-starter-code/"*dossier1*file1*".tsp"
+chemin = "/Users/daphneboulanger/GIT/mth6412b-starter-code/"*dossier2*file2*".tsp"
 
 head = read_header(chemin)
 noeuds = read_nodes(head, chemin)
@@ -100,3 +106,8 @@ essai = rsl(graphe, "k", 2)
 show(essai)
 println(cost(essai))
 # println(cost(gr17_rsl))
+
+tour = create_tour_zero(essai)
+write_tour(file2*".nous",tour,convert(Float32,cost(essai)))
+reconstruct_picture("/Users/daphneboulanger/GIT/mth6412b-starter-code/"*file2*".nous","/Users/daphneboulanger/GIT/mth6412b-starter-code/images/shuffled/"*file2*".png","/Users/daphneboulanger/GIT/mth6412b-starter-code/images/reconstructed/"*file2*".png",view=true)
+
