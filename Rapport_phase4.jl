@@ -81,6 +81,8 @@ Les images reconstruites avec cette méthode se trouvent dans le dossier mth6412
 
 Ceci est dû à une construction d'un arbre qui n'est pas optimal pour le calcul d'un cycle : le sommet 0 ayant des couts nuls vers tous les autres sommets, l'arbre créé a comme racine 0 et est de hauteur 1. RSL n'a donc aucun impact sur la solution obtenue.
 
+Ci-dessous l'image reconstruite lower-kananaskis-lake.
+
 """
 
 # ╔═╡ c9560c09-c365-4b3d-8bf9-34ca5af037b9
@@ -157,6 +159,9 @@ write(io, read(w.filename))
 end
 end
 
+# ╔═╡ 669644dc-bd02-43e1-98b6-27792569ecba
+Wow("/Users/daphneboulanger/GIT/mth6412b-starter-code/images/reconstructed/lower-kananaskis-lake.png")
+
 # ╔═╡ 3d62a742-9339-4127-a4cc-fe8c16de95a2
 Wow("/Users/daphneboulanger/GIT/mth6412b-starter-code/images/reconstructed/lower-kananaskis-lake_modif.png")
 
@@ -209,6 +214,7 @@ Wow("/Users/daphneboulanger/GIT/mth6412b-starter-code/images/reconstructed/lower
 # ╟─f6567373-46a9-426c-96b6-c266d436b5b0
 # ╟─e4ab50d2-0509-4ada-8773-34a8dc6c05bb
 # ╟─9e721ddf-b917-4165-9fc5-ee54ebedb844
+# ╟─669644dc-bd02-43e1-98b6-27792569ecba
 # ╟─c9560c09-c365-4b3d-8bf9-34ca5af037b9
 # ╟─e9bcf716-2140-49fd-98de-c57edc8b4f94
 # ╟─5284285f-8794-45ec-a0bb-210c95d7c54f
